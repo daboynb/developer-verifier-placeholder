@@ -31,7 +31,7 @@ between vendors and Android builds. Run the triage below to find out which case 
 ## Step 1 — run the triage
 
 ```
-adb shell pm list packages -u | grep verifier
+adb shell "pm list packages -u | grep verifier"
 adb uninstall com.google.android.verifier
 ```
 
@@ -44,7 +44,7 @@ people get stuck with `Failure [not installed for 0]`.
 **`Success`** → the Verifier was an ordinary updatable app and is now really gone. Install the placeholder:
 
 ```
-adb install -r -d developer-verifier-v3000000000000.apk
+adb install -r developer-verifier-v3000000000000.apk
 ```
 
 **`Failure [not installed for 0]`, while step 1 still lists the package** → the Verifier is
