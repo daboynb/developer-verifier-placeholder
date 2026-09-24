@@ -47,12 +47,21 @@ people get stuck with `Failure [not installed for 0]`.
 adb install -r -d developer-verifier-v3000000000000.apk
 ```
 
-**`Failure [not installed for 0]`, while step 1 still lists the package** → the Verifier is
-preinstalled in your system partition. Android never actually deletes a system package: it marks it
+**Anything other than `Success`, while step 1 still lists the package** → the Verifier is
+preinstalled as a system component. On modern Pixel and Samsung builds (Android 16) it is baked in,
+so the uninstall does not really remove it — you'll see one of:
+
+- `Failure [not installed for 0]`
+- `Failure [DELETE_FAILED_INTERNAL_ERROR]`
+- the command "succeeds" but only strips *updates*, and `pm list` still shows
+  `com.google.android.verifier` (often together with `com.google.android.verifier.overlay`)
+
+All of these are the same case. Android never actually deletes a system package: it marks it
 `installed=false` for the user and keeps the package record *and its original signature* in the
 package database ([AOSP `DeletePackageHelper`](https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/services/core/java/com/android/server/pm/DeletePackageHelper.java)).
 Any differently signed APK is rejected from then on. There is no non-root workaround — please do not
-open an issue for this.
+open an issue for this. On older builds (Android 13, e.g. OnePlus) the same package is usually an
+ordinary app and uninstalls cleanly, so it really does vary by device.
 
 Both outcomes have been reported on similar hardware, so do not assume from someone else's report:
 run the two commands on your own device.
