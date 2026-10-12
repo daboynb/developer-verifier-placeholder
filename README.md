@@ -28,12 +28,24 @@ a package with one signed by a different key ([AOSP](https://cs.android.com/andr
 Whether this is fixable **depends on how the Verifier got onto your device**, and that differs
 between vendors and Android builds. Run the triage below to find out which case you are in.
 
+## Step 0 — set up adb (skip if you already have it)
+
+1. Download [Platform Tools](https://developer.android.com/tools/releases/platform-tools), unzip it, put the APK in that folder and open a terminal there.
+2. On the phone, tap **Build number** 7 times (Settings → About phone; on Samsung → Software information), then enable **USB debugging** in Developer options.
+3. Samsung: turn off **Auto Blocker** first. Xiaomi: also enable **Install via USB**.
+4. Plug in the phone, run `adb devices` and accept the prompt on the phone. It must say `device`, not `unauthorized`.
+
+Running from the unzipped folder, type `./adb` (Linux/macOS) or `.\adb.exe` (Windows) instead of `adb` in every command below.
+
 ## Step 1 — run the triage
 
 ```
-adb shell pm list packages -u | grep verifier
+adb shell pm list packages -u verifier
 adb uninstall com.google.android.verifier
+adb shell pm list packages -u verifier
 ```
+
+If the first command prints nothing, the Verifier isn't on your device: skip straight to the install command in step 2.
 
 Do **not** add `--user 0`. By default `adb uninstall` removes the package for *every* user on the
 device, which is what you want — `--user 0` only touches the primary profile and is the reason many
@@ -64,7 +76,7 @@ open an issue for this. On older builds (Android 13, e.g. OnePlus) the same pack
 ordinary app and uninstalls cleanly, so it really does vary by device.
 
 Both outcomes have been reported on similar hardware, so do not assume from someone else's report:
-run the two commands on your own device.
+run the commands above on your own device.
 
 ## Notes
 
